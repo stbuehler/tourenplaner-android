@@ -131,7 +131,7 @@ public class BillingScreen extends SherlockExpandableListActivity implements Obs
 		public void onError(AsyncHandler caller, Object object) {
 			billingRequestHandler = null;
 			setSupportProgressBarIndeterminateVisibility(false);
-			Toast.makeText(getApplicationContext(), ((Exception) object).getLocalizedMessage(), Toast.LENGTH_LONG);
+			Toast.makeText(getApplicationContext(), ((Exception) object).getLocalizedMessage(), Toast.LENGTH_LONG).show();
 		}
 	};
 
@@ -152,7 +152,6 @@ public class BillingScreen extends SherlockExpandableListActivity implements Obs
 		Toast.makeText(this, ((Exception) object).getLocalizedMessage(), Toast.LENGTH_LONG).show();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void onScroll(AbsListView arg0, int firstVisible, int visibleCount, int totalCount) {
 		boolean loadMore =

@@ -36,7 +36,6 @@ import java.util.List;
 
 public class WayDescriptionFragment extends SherlockFragment implements Observer {
 	private Session session;
-	private WayDescriptionFragment wd;
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
@@ -47,7 +46,6 @@ public class WayDescriptionFragment extends SherlockFragment implements Observer
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		wd = this;
 		// If we get created for the first time we get our data from the intent
 		Bundle data = savedInstanceState != null ? savedInstanceState : getActivity().getIntent().getExtras();
 		session = (Session) data.getSerializable(Session.IDENTIFIER);
@@ -61,7 +59,7 @@ public class WayDescriptionFragment extends SherlockFragment implements Observer
 		if (session.gettbtResult() != null && session.gettbtResult().getStreetNames() != null) {
 			TextView tv = (TextView) view.findViewById(R.id.tbtdist);
 			tv.setText("Distance " + session.gettbtResult().getCompleteDist());
-			List streets = session.gettbtResult().getStreetNames();
+			List<String> streets = session.gettbtResult().getStreetNames();
 			ListAdapter adapter = new ArrayAdapter<String>(ToureNPlanerApplication.getContext(), R.layout.list_item, streets);
 			ListView listView = (ListView) view.findViewById(android.R.id.list);
 			listView.setAdapter(adapter);
@@ -73,7 +71,7 @@ public class WayDescriptionFragment extends SherlockFragment implements Observer
 	public void onCompleted(AsyncHandler caller, Object object) {
 
 		if (session.gettbtResult() != null && session.gettbtResult().getStreetNames() != null) {
-			List streets = session.gettbtResult().getStreetNames();
+			List<String> streets = session.gettbtResult().getStreetNames();
 			ListAdapter adapter = new ArrayAdapter<String>(ToureNPlanerApplication.getContext(), R.layout.list_item, streets);
 			ListView listView = (ListView) view.findViewById(android.R.id.list);
 			listView.setAdapter(adapter);

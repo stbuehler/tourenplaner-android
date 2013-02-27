@@ -48,7 +48,7 @@ public class TBTResult implements Serializable {
 	}
 
 	private int dist = 0;
-	List streets = new ArrayList<String>();
+	List<String> streets = new ArrayList<String>();
 
 	private static ArrayList<ArrayList<Node>> tbtway = null;
 	public static TBTResult parse(JacksonManager.ContentType type, InputStream stream) throws IOException {

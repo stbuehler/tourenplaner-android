@@ -446,7 +446,6 @@ public class Session implements Serializable {
 	 * @param listener the Callback listener
 	 * @return Use this to cancel the task with cancel(true)
 	 */
-	@SuppressWarnings("unchecked")
 	public static ServerInfoHandler createSession(String url, Observer listener) {
 		ServerInfoHandler handler = new ServerInfoHandler(listener, url);
 		handler.execute();

@@ -88,7 +88,7 @@ public class ArrayDeque<E> extends AbstractCollection<E>
 	 * The minimum capacity that we'll use for a newly created deque.
 	 * Must be a power of 2.
 	 */
-	private static final int MIN_INITIAL_CAPACITY = 8;
+	// private static final int MIN_INITIAL_CAPACITY = 8;
 
 	// ******  Array allocation and resizing utilities ******
 

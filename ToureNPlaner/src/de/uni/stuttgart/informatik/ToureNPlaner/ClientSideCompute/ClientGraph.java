@@ -32,8 +32,6 @@ import java.io.InputStream;
  * @author Niklas Schnelle
  */
 public class ClientGraph implements SimpleGraph {
-    private static final long serialVersionUID = 1L;
-
 	private final IntObjectOpenHashMap<IntArrayList> outEdgeIndices;
 	private final SimpleGraph parent;
 	private final int parentEdgeCount;

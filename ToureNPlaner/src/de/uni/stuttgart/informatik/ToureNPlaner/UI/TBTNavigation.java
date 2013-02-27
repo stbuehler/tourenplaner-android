@@ -48,7 +48,6 @@ public class TBTNavigation implements TextToSpeech.OnInitListener, Serializable,
 	private static TextToSpeech tts;
 	private ArrayList<ArrayList<Node>> tbtway = null;
 
-	private MapScreen ms;
 	private static long lastdirectionspeech = (new Date()).getTime();
 
 	public void stopTBT() {
@@ -123,7 +122,7 @@ public class TBTNavigation implements TextToSpeech.OnInitListener, Serializable,
 	public TBTNavigation(Session s, MapScreen ms) {
 		tts = new TextToSpeech(ToureNPlanerApplication.getContext(), this);
 		session = s;
-		this.ms = ms;
+		// this.ms = ms;
 	}
 
 	public void initTBT(String tbtip) {
@@ -222,7 +221,7 @@ public class TBTNavigation implements TextToSpeech.OnInitListener, Serializable,
 		if (tbtway == null) {
 			tbtway = session.gettbtResult().gettbtway();
 			if (tbtway == null) {
-				Toast.makeText(ToureNPlanerApplication.getContext(), "No turn by turn data available, please run a turn by turn request", Toast.LENGTH_LONG);
+				Toast.makeText(ToureNPlanerApplication.getContext(), "No turn by turn data available, please run a turn by turn request", Toast.LENGTH_LONG).show();
 				active = false;
 				return;
 			}
@@ -248,12 +247,12 @@ public class TBTNavigation implements TextToSpeech.OnInitListener, Serializable,
 
 		//TODO: Better method for determining the progress on the way
 		Node n = nearestNode(currentlat, currentlon);
-		Log.d("tp", "Nearest node: " + n.getName());
 		if (n == null) {
 			Log.i("tp", "tbtway too short??");
 			//meh
 			return;
 		}
+		Log.d("tp", "Nearest node: " + n.getName());
 
 		double tempdist = 0;
 		int nodesindex = -1;
@@ -341,7 +340,7 @@ public class TBTNavigation implements TextToSpeech.OnInitListener, Serializable,
 
 		Log.d("tp", "Direction 2: " + directionbeforeturn + " -> " + directionafterturn);
 
-		String currentstreetname = tempway.get(0).getName().startsWith("??") ? "eine unbenannte Straße" : tempway.get(0).getName();
+		// String currentstreetname = tempway.get(0).getName().startsWith("??") ? "eine unbenannte Straße" : tempway.get(0).getName();
 		String nextstreetname = tempwaynext.get(0).getName().startsWith("??") ? "eine unbenannte Straße" : tempwaynext.get(0).getName();
 
 		double diff = (directionbeforeturn - directionafterturn + 360) % 360;
@@ -386,6 +385,7 @@ public class TBTNavigation implements TextToSpeech.OnInitListener, Serializable,
 	}
 
 	//TODO: this is horrible and not even used
+	/*
 	private Node[] getTwoNearestNodes(double lat, double lon) {
 		if (tbtway.size() < 2 && tbtway.get(0).size() < 2 ) {
 			return null;
@@ -418,6 +418,7 @@ public class TBTNavigation implements TextToSpeech.OnInitListener, Serializable,
 
 		return new Node[] {nearest1, nearest2};
 	}
+	*/
 
 	private  boolean active = false;
 	public boolean currentlyRunning() {

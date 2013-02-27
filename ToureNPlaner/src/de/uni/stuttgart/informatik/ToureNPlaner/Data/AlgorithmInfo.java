@@ -50,6 +50,10 @@ public class AlgorithmInfo implements Serializable, Comparable<AlgorithmInfo> {
 		return name;
 	}
 
+	public String getVersion() {
+		return version;
+	}
+
 	public String getDescription() {
 		if (description == null || description.equals("")) {
 			if ("sp".equals(urlsuffix)) {

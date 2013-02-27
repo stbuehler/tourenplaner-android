@@ -46,7 +46,6 @@ import de.uni.stuttgart.informatik.ToureNPlaner.Net.Handler.RequestNN;
 import de.uni.stuttgart.informatik.ToureNPlaner.Net.Observer;
 import de.uni.stuttgart.informatik.ToureNPlaner.Net.Session;
 import de.uni.stuttgart.informatik.ToureNPlaner.R;
-import de.uni.stuttgart.informatik.ToureNPlaner.ToureNPlanerApplication;
 import de.uni.stuttgart.informatik.ToureNPlaner.UI.Activities.*;
 import de.uni.stuttgart.informatik.ToureNPlaner.UI.CustomTileDownloader;
 import de.uni.stuttgart.informatik.ToureNPlaner.UI.Overlays.FastWayOverlay;
@@ -393,7 +392,6 @@ public class MapScreen extends MapActivity implements Session.Listener {
 			}
 		});
 		searchMenu.getActionView().findViewById(R.id.search_field).setOnKeyListener(new View.OnKeyListener() {
-			@SuppressWarnings("unchecked")
 			@Override
 			public boolean onKey(View v, int keyCode, KeyEvent event) {
 				if (keyCode == KeyEvent.KEYCODE_ENTER) {
@@ -558,7 +556,6 @@ public class MapScreen extends MapActivity implements Session.Listener {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public void performNNSearch(Node node) {
 		requestList.add((RequestNN) new RequestNN(nnsListener, session, node).execute());
 	}
@@ -576,7 +573,6 @@ public class MapScreen extends MapActivity implements Session.Listener {
 	}
 
 	@Override
-	@SuppressWarnings("deprecation")
 	public Object onRetainNonConfigurationInstance() {
 		return Session.sesshandler;
 	}

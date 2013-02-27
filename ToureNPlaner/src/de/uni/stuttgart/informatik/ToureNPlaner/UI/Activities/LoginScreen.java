@@ -94,7 +94,6 @@ public class LoginScreen extends SherlockFragmentActivity implements Observer {
 		Button btnlogin = (Button) findViewById(R.id.btnlogin);
 		btnlogin.setOnClickListener(new OnClickListener() {
 
-			@SuppressWarnings("unchecked")
 			@Override
 			public void onClick(View view) {
 				// gets Values of TextEditors
