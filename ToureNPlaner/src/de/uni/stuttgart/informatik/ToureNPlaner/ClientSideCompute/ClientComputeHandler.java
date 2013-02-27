@@ -30,6 +30,7 @@ import de.uni.stuttgart.informatik.ToureNPlaner.Data.Request;
 import de.uni.stuttgart.informatik.ToureNPlaner.Data.Result;
 import de.uni.stuttgart.informatik.ToureNPlaner.Handler.AlgorithmRequest;
 import de.uni.stuttgart.informatik.ToureNPlaner.Handler.Observer;
+import de.uni.stuttgart.informatik.ToureNPlaner.Net.DoneHandlerInputStream;
 import de.uni.stuttgart.informatik.ToureNPlaner.Net.JacksonManager;
 import de.uni.stuttgart.informatik.ToureNPlaner.Net.Session;
 import de.uni.stuttgart.informatik.ToureNPlaner.Net.Handler.SessionAwareHandler;
@@ -67,20 +68,6 @@ public class ClientComputeHandler extends SessionAwareHandler implements Algorit
 		}
 	}
 
-	private InputStream getCorrectStream(HttpURLConnection urlConnection) throws IOException {
-		InputStream stream;
-		try {
-			// TODO: Only works > 4.0 else we need DoneHandlerInputStream
-			stream = urlConnection.getInputStream();
-		} catch (IOException exception) {
-			stream = urlConnection.getErrorStream();
-			if (stream == null) {
-				throw exception;
-			}
-		}
-		return stream;
-	}
-
 	private void checkStatus(HttpURLConnection urlConnection, InputStream stream, JacksonManager.ContentType type) throws IOException, de.uni.stuttgart.informatik.ToureNPlaner.Data.Error {
 		if (urlConnection.getResponseCode() != HttpURLConnection.HTTP_OK) {
 			ObjectMapper mapper = JacksonManager.getMapper(type);
@@ -98,7 +85,7 @@ public class ClientComputeHandler extends SessionAwareHandler implements Algorit
 			int level = 40;
 			writeSubgraphRequest(level, urlConnection);
 
-			InputStream stream = getCorrectStream(urlConnection);
+			InputStream stream = DoneHandlerInputStream.http_get_stream(urlConnection);
 
 			JacksonManager.ContentType type = JacksonManager.ContentType.parse(urlConnection.getContentType());
 
@@ -120,7 +107,7 @@ public class ClientComputeHandler extends SessionAwareHandler implements Algorit
 		try {
 			writeWayByNodeIdsRequest(urlConnection, pathOfNodes);
 
-			InputStream stream = getCorrectStream(urlConnection);
+			InputStream stream = DoneHandlerInputStream.http_get_stream(urlConnection);
 
 			JacksonManager.ContentType type = JacksonManager.ContentType.parse(urlConnection.getContentType());
 

@@ -19,6 +19,9 @@ package de.uni.stuttgart.informatik.ToureNPlaner.Net;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
+
+import android.os.Build;
 
 /**
  * This input stream won't read() after the underlying stream is exhausted.
@@ -41,5 +44,23 @@ public final class DoneHandlerInputStream extends FilterInputStream {
 		}
 		done = true;
 		return -1;
+	}
+
+	public static InputStream wrap(InputStream stream) {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+			return new DoneHandlerInputStream(stream);
+		}
+		return stream;
+	}
+
+	public static InputStream http_get_stream(HttpURLConnection urlConnection) throws IOException {
+		InputStream stream = null;
+		try {
+			stream = urlConnection.getInputStream();
+		} catch (IOException e) {
+			stream = urlConnection.getErrorStream();
+			if (null == stream) throw e;
+		}
+		return stream != null ? wrap(stream) : null;
 	}
 }

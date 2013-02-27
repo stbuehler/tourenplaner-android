@@ -24,7 +24,6 @@ import de.uni.stuttgart.informatik.ToureNPlaner.Net.DoneHandlerInputStream;
 import de.uni.stuttgart.informatik.ToureNPlaner.Net.JacksonManager;
 import de.uni.stuttgart.informatik.ToureNPlaner.Net.Session;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -52,16 +51,7 @@ public abstract class SessionNetworkHandler extends SessionAwareHandler {
 			HttpURLConnection urlConnection = getHttpUrlConnection();
 
 			try {
-				InputStream stream;
-				try {
-					stream = new DoneHandlerInputStream(urlConnection.getInputStream());
-				} catch (IOException exception) {
-					stream = urlConnection.getErrorStream();
-					if (stream == null) {
-						throw exception;
-					}
-					stream = new DoneHandlerInputStream(stream);
-				}
+				InputStream stream = DoneHandlerInputStream.http_get_stream(urlConnection);
 				JacksonManager.ContentType type = JacksonManager.ContentType.parse(urlConnection.getContentType());
 
 				if (urlConnection.getResponseCode() != HttpURLConnection.HTTP_OK) {
