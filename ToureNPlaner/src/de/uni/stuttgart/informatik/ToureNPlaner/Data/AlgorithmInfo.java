@@ -16,150 +16,50 @@
 
 package de.uni.stuttgart.informatik.ToureNPlaner.Data;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import de.uni.stuttgart.informatik.ToureNPlaner.Data.Constraints.ConstraintType;
-import de.uni.stuttgart.informatik.ToureNPlaner.R;
-import de.uni.stuttgart.informatik.ToureNPlaner.ToureNPlanerApplication;
+import de.uni.stuttgart.informatik.ToureNPlaner.Handler.AlgorithmRequestNN;
+import de.uni.stuttgart.informatik.ToureNPlaner.Handler.AlgorithmRequest;
+import de.uni.stuttgart.informatik.ToureNPlaner.Handler.Observer;
+import de.uni.stuttgart.informatik.ToureNPlaner.Net.Session;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class AlgorithmInfo implements Serializable, Comparable<AlgorithmInfo> {
-	private String version;
-	private String name;
-	private String description;
-	private String urlsuffix;
-	private int minPoints;
-	private int maxPoints;
-	private boolean sourceIsTarget;
-	private boolean isHidden;
-	private boolean isClientSide;
-	private ArrayList<ConstraintType> constraintTypes;
-	private ArrayList<ConstraintType> pointConstraintTypes;
+public interface AlgorithmInfo extends Serializable {
+	public abstract String getName();
 
-	private AlgorithmInfo() {
-		this.isClientSide = false;
-	}
+	public abstract String getDescription();
 
-	@Override
-	public String toString() {
-		return name;
-	}
+	public abstract boolean sourceIsTarget();
 
-	public String getName() {
-		return name;
-	}
+	public abstract String getUrlsuffix();
 
-	public String getVersion() {
-		return version;
-	}
+	public abstract boolean isHidden();
 
-	public String getDescription() {
-		if (description == null || description.equals("")) {
-			if ("sp".equals(urlsuffix)) {
-				return ToureNPlanerApplication.getContext().getString(R.string.sp_description);
-			} else if ("tsp".equals(urlsuffix)) {
-				return ToureNPlanerApplication.getContext().getString(R.string.tsp_description);
-			} else if ("csp".equals(urlsuffix)) {
-				return ToureNPlanerApplication.getContext().getString(R.string.csp_description);
-			}
-		}
-		return description;
-	}
+	public abstract int getMinPoints();
 
-	public boolean sourceIsTarget() {
-		return sourceIsTarget;
-	}
+	public abstract int getMaxPoints();
 
-	public String getUrlsuffix() {
-		return urlsuffix;
-	}
+	public abstract ArrayList<ConstraintType> getPointConstraintTypes();
 
-	public ArrayList<ConstraintType> getPointConstraintTypes() {
-		return pointConstraintTypes;
-	}
+	public abstract ArrayList<ConstraintType> getConstraintTypes();
 
-	public boolean isHidden() {
-		return isHidden;
-	}
+	/**
+	 * Start a request for the currently set points
+	 *
+	 * @param listener  object to report results to
+	 * @param session   session containing current server URL, points and constraint settings
+	 * @return {@link AlgorithmRequest}
+	 */
+	public abstract AlgorithmRequest execute(Observer listener, Session session);
 
-	public boolean isClientSide() {
-		return isClientSide;
-	}
-
-	public int getMinPoints() {
-		return minPoints;
-	}
-
-	public int getMaxPoints() {
-		return maxPoints;
-	}
-
-	public static AlgorithmInfo parse(JsonNode object) {
-		AlgorithmInfo info = new AlgorithmInfo();
-		info.version = object.path("version").asText();
-		info.name = object.path("name").asText();
-		info.description = object.path("description").asText();
-		info.urlsuffix = object.path("urlsuffix").asText();
-
-		JsonNode details = object.get("details");
-		if (details != null) {
-			info.minPoints = details.path("minpoints").asInt(0);
-			info.maxPoints = details.path("maxpoints").asInt(Integer.MAX_VALUE);
-			if (details.path("maxpoints").isMissingNode())
-				info.maxPoints = Integer.MAX_VALUE;
-			info.sourceIsTarget = details.path("sourceistarget").asBoolean();
-			info.isHidden = details.path("hidden").asBoolean();
-		}
-
-		JsonNode constraints = object.get("constraints");
-		if (constraints == null) {
-			info.constraintTypes = new ArrayList<ConstraintType>();
-		} else {
-			info.constraintTypes = new ArrayList<ConstraintType>(constraints.size());
-			for (JsonNode constraint : constraints) {
-
-				info.constraintTypes.add(ConstraintType.parseType(constraint));
-			}
-		}
-
-		JsonNode pointconstraints = object.get("pointconstraints");
-		if (pointconstraints == null) {
-			info.pointConstraintTypes = new ArrayList<ConstraintType>();
-		} else {
-			info.pointConstraintTypes = new ArrayList<ConstraintType>(pointconstraints.size());
-			for (JsonNode constraint : pointconstraints) {
-				info.pointConstraintTypes.add(ConstraintType.parseType(constraint));
-			}
-		}
-
-		return info;
-	}
-
-	@Override
-	public int compareTo(AlgorithmInfo another) {
-		if (another == null)
-			return 0;
-
-		return name.compareTo(another.name);
-	}
-
-	public static AlgorithmInfo createTestClientSide() {
-		AlgorithmInfo info = new AlgorithmInfo();
-		info.name = "DORC";
-		info.version = "1";
-		info.description = "Shortest Path computed on the client (experimental)";
-		info.urlsuffix = "updowng";
-		info.pointConstraintTypes = new ArrayList<ConstraintType>();
-		info.constraintTypes = new ArrayList<ConstraintType>();
-		info.minPoints = 2;
-		info.maxPoints = 2;
-		info.isHidden = false;
-		info.isClientSide = true;
-		return info;
-	}
-
-	public ArrayList<ConstraintType> getConstraintTypes() {
-		return constraintTypes;
-	}
+	/**
+	 * Search the real node closest to the given location
+	 *
+	 * @param listener  object to report results to
+	 * @param session   session containing current server URL
+	 * @param node      the location to search for
+	 * @return {@link AlgorithmRequestNN}
+	 */
+	public abstract AlgorithmRequestNN executeNN(Observer listener, Session session, Node node);
 }

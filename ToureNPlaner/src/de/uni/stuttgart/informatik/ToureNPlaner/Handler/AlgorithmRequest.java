@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 ToureNPlaner
+ * Copyright 2013 ToureNPlaner
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -14,12 +14,27 @@
  *    limitations under the License.
  */
 
-package de.uni.stuttgart.informatik.ToureNPlaner.Net;
+package de.uni.stuttgart.informatik.ToureNPlaner.Handler;
 
-import de.uni.stuttgart.informatik.ToureNPlaner.Net.Handler.AsyncHandler;
+import de.uni.stuttgart.informatik.ToureNPlaner.Net.Session;
+import de.uni.stuttgart.informatik.ToureNPlaner.Data.AlgorithmInfo;
 
-public interface Observer {
-	void onCompleted(AsyncHandler caller, Object object);
+/**
+ * Interface to keep track of a running
+ * {@link AlgorithmInfo#execute(Observer, Session) request}.
+ *
+ * @author Stefan Bühler
+ */
+public interface AlgorithmRequest {
+	/**
+	 * Cancel request.
+	 */
+	public boolean cancel(boolean mayInterruptIfRunning);
 
-	void onError(AsyncHandler caller, Object object);
+	/**
+	 * Set Observer to report result to.
+	 *
+	 * @param listener
+	 */
+	public void setListener(Observer listener);
 }

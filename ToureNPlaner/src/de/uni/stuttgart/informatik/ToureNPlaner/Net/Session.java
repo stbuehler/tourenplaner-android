@@ -26,6 +26,8 @@ import de.uni.stuttgart.informatik.ToureNPlaner.Data.*;
 import de.uni.stuttgart.informatik.ToureNPlaner.Data.Constraints.Constraint;
 import de.uni.stuttgart.informatik.ToureNPlaner.Data.Constraints.ConstraintType;
 import de.uni.stuttgart.informatik.ToureNPlaner.Data.Edits.NodeModel;
+import de.uni.stuttgart.informatik.ToureNPlaner.Handler.AlgorithmRequest;
+import de.uni.stuttgart.informatik.ToureNPlaner.Handler.Observer;
 import de.uni.stuttgart.informatik.ToureNPlaner.Net.Handler.*;
 import de.uni.stuttgart.informatik.ToureNPlaner.R;
 import de.uni.stuttgart.informatik.ToureNPlaner.ToureNPlanerApplication;
@@ -36,7 +38,6 @@ import org.mapsforge.core.GeoPoint;
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.UUID;
@@ -48,7 +49,7 @@ public class Session implements Serializable {
 	public static final String IDENTIFIER = "session";
 	public static final String DIRECTORY = "session";
 	public static SimpleNetworkHandler simplehandler = null;
-	public static SessionAwareHandler sesshandler = null;
+	public static AlgorithmRequest sesshandler = null;
 
 	double direction = 0;
 	public boolean compassenabled = false;
@@ -68,9 +69,10 @@ public class Session implements Serializable {
 
 
 	private static class Data implements Serializable {
-		private ServerInfo serverInfo;
+		private URL url;
 		private String username;
 		private String password;
+		private ArrayList<AlgorithmInfo> algorithms;
 		private AlgorithmInfo selectedAlgorithm;
 		private User user;
 		private ArrayList<Constraint> constraints;
@@ -229,7 +231,7 @@ public class Session implements Serializable {
 		if (d == null)
 			loadAll();
 		cl = new SyncCoreLoader();
-		cl.setURL(d.serverInfo.getURL());
+		cl.setURL(d.url.toString());
 
 		listeners = new WeakHashMap<Object, Listener>();
 	}
@@ -308,22 +310,27 @@ public class Session implements Serializable {
 		return nodeModel;
 	}
 
-	public void setUrl(String url) {
-		try {
-			URL uri = new URL(url);
-			d.serverInfo.setHostname(uri.getHost());
-			int port = uri.getPort();
-			d.serverInfo.setPort(port == -1 ? 80 : port);
-			cl.setURL(url);
-			saveData();
-		} catch (MalformedURLException e) {
-			// Should never happen
-			e.printStackTrace();
-		}
+	public void setURL(URL url) {
+		d.url = url;
+		cl.setURL(url.toString());
+		saveData();
 	}
 
-	public String getUrl() {
-		return d.serverInfo.getURL();
+	public URL getURL() {
+		return d.url;
+	}
+
+	public boolean isPrivateURL() {
+		return d.url.getProtocol().equals("https");
+	}
+
+	public void setAlgorithms(ArrayList<AlgorithmInfo> algorithms) {
+		d.algorithms = algorithms;
+		saveData();
+	}
+
+	public ArrayList<AlgorithmInfo> getAlgorithms() {
+		return d.algorithms;
 	}
 
 	public HttpURLConnection openGetConnection(String path, String url) throws IOException {
@@ -331,7 +338,7 @@ public class Session implements Serializable {
 
 		HttpURLConnection con = (HttpURLConnection) uri.openConnection();
 
-		if (d.serverInfo.getServerType() == ServerInfo.ServerType.PRIVATE && url.equals(getUrl())) {
+		if (isPrivateURL() && url.equals(getURL().toString())) {
 			try {
 				((HttpsURLConnection) con).setSSLSocketFactory(ToureNPlanerApplication.getSslContext().getSocketFactory());
 				String userPassword = getUsername() + ":" + getPassword();
@@ -349,7 +356,7 @@ public class Session implements Serializable {
 	}
 
 	public HttpURLConnection openGetConnection(String path) throws IOException {
-		return openGetConnection(path, getUrl());
+		return openGetConnection(path, getURL().toString());
 	}
 
 	public HttpURLConnection openPostConnection(String path, String url) throws IOException {
@@ -363,7 +370,7 @@ public class Session implements Serializable {
 	}
 
 	public HttpURLConnection openPostConnection(String path) throws IOException {
-		return openPostConnection(path, getUrl());
+		return openPostConnection(path, getURL().toString());
 	}
 
 	public String getUsername() {
@@ -420,15 +427,6 @@ public class Session implements Serializable {
 
 	public void setConstraints(ArrayList<Constraint> constraints) {
 		d.constraints = constraints;
-	}
-
-	public void setServerInfo(ServerInfo serverInfo) {
-		d.serverInfo = serverInfo;
-		saveData();
-	}
-
-	public ServerInfo getServerInfo() {
-		return d.serverInfo;
 	}
 
 	public void setUsername(String username) {
@@ -490,19 +488,15 @@ public class Session implements Serializable {
 		return cl.getCoreGraph();
 	}
 
-	public SessionAwareHandler performRequest(Observer requestListener, boolean force) throws RequestInvalidException {
+	public AlgorithmRequest performRequest(Observer requestListener, boolean force) throws RequestInvalidException {
 		if (canPerformRequest() && (force || result == null || nodeModel.getVersion() != result.getVersion())) {
-			if (d.selectedAlgorithm.isClientSide()){
-				return (SessionAwareHandler) new ClientComputeHandler(requestListener, this).execute();
-			} else {
-				return (SessionAwareHandler) new RequestHandler(requestListener, this).execute();
-			}
+			return d.selectedAlgorithm.execute(requestListener, this);
 		} else {
 			throw new RequestInvalidException(canPerformReason());
 		}
 	}
 
-	public SessionAwareHandler performtbtRequestPreparation(final String tbtip) throws RequestInvalidException {
+	public AlgorithmRequest performtbtRequestPreparation(final String tbtip) throws RequestInvalidException {
 		if (getNodeModel().getNodeVector().size() < 1) {
 			throw new RequestInvalidException(ToureNPlanerApplication.getContext().getString(R.string.needtargetmarker));
 		}
@@ -554,12 +548,12 @@ public class Session implements Serializable {
 			this.tbtip = tbtip;
 		}
 		@Override
-		public void onCompleted(AsyncHandler caller, Object object) {
+		public void onCompleted(Object caller, Object object) {
 			nav.initTBT(tbtip);
 		}
 
 		@Override
-		public void onError(AsyncHandler caller, Object object) {
+		public void onError(Object caller, Object object) {
 			Toast.makeText(ToureNPlanerApplication.getContext(),"Error:\n" + object.toString(), Toast.LENGTH_LONG).show();
 		}
 	}

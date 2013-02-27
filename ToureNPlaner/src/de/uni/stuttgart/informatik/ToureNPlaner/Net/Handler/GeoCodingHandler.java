@@ -17,7 +17,8 @@
 package de.uni.stuttgart.informatik.ToureNPlaner.Net.Handler;
 
 import android.graphics.RectF;
-import de.uni.stuttgart.informatik.ToureNPlaner.Net.Observer;
+import de.uni.stuttgart.informatik.ToureNPlaner.Handler.Observer;
+
 import org.mapsforge.core.GeoPoint;
 
 public abstract class GeoCodingHandler extends SimpleNetworkHandler {

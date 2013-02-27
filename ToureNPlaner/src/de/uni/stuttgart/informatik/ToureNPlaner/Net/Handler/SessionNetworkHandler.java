@@ -18,9 +18,10 @@ package de.uni.stuttgart.informatik.ToureNPlaner.Net.Handler;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import de.uni.stuttgart.informatik.ToureNPlaner.Handler.Observer;
 import de.uni.stuttgart.informatik.ToureNPlaner.Net.DoneHandlerInputStream;
 import de.uni.stuttgart.informatik.ToureNPlaner.Net.JacksonManager;
-import de.uni.stuttgart.informatik.ToureNPlaner.Net.Observer;
 import de.uni.stuttgart.informatik.ToureNPlaner.Net.Session;
 
 import java.io.IOException;

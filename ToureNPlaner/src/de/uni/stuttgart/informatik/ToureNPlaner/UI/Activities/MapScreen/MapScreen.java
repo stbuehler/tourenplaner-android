@@ -39,11 +39,10 @@ import de.uni.stuttgart.informatik.ToureNPlaner.Data.Constraints.Constraint;
 import de.uni.stuttgart.informatik.ToureNPlaner.Data.Edits.*;
 import de.uni.stuttgart.informatik.ToureNPlaner.Data.Node;
 import de.uni.stuttgart.informatik.ToureNPlaner.Data.Result;
-import de.uni.stuttgart.informatik.ToureNPlaner.Net.Handler.AsyncHandler;
+import de.uni.stuttgart.informatik.ToureNPlaner.Handler.AlgorithmRequest;
+import de.uni.stuttgart.informatik.ToureNPlaner.Handler.AlgorithmRequestNN;
+import de.uni.stuttgart.informatik.ToureNPlaner.Handler.Observer;
 import de.uni.stuttgart.informatik.ToureNPlaner.Net.Handler.GeoCodingHandler;
-import de.uni.stuttgart.informatik.ToureNPlaner.Net.Handler.RequestHandler;
-import de.uni.stuttgart.informatik.ToureNPlaner.Net.Handler.RequestNN;
-import de.uni.stuttgart.informatik.ToureNPlaner.Net.Observer;
 import de.uni.stuttgart.informatik.ToureNPlaner.Net.Session;
 import de.uni.stuttgart.informatik.ToureNPlaner.R;
 import de.uni.stuttgart.informatik.ToureNPlaner.UI.Activities.*;
@@ -98,11 +97,11 @@ public class MapScreen extends MapActivity implements Session.Listener {
 
 	private GpsListener gpsListener;
 
-	private final ArrayList<RequestNN> requestList = new ArrayList<RequestNN>();
+	private final ArrayList<AlgorithmRequestNN> requestList = new ArrayList<AlgorithmRequestNN>();
 
 	private final Observer requestListener = new Observer() {
 		@Override
-		public void onCompleted(AsyncHandler caller, Object object) {
+		public void onCompleted(Object caller, Object object) {
 			Session.sesshandler = null;
 			Edit edit = new SetResultEdit(session, (Result) object);
 			edit.perform();
@@ -110,7 +109,7 @@ public class MapScreen extends MapActivity implements Session.Listener {
 		}
 
 		@Override
-		public void onError(AsyncHandler caller, Object object) {
+		public void onError(Object caller, Object object) {
 			Session.sesshandler = null;
 			setSupportProgressBarIndeterminateVisibility(false);
 			Toast.makeText(getApplicationContext(), object.toString(), Toast.LENGTH_LONG).show();
@@ -119,14 +118,14 @@ public class MapScreen extends MapActivity implements Session.Listener {
 
 	private final Observer nnsListener = new Observer() {
 		@Override
-		public void onCompleted(AsyncHandler caller, Object object) {
-			Edit edit = new UpdateNNSEdit(session, ((RequestNN) caller).getNode(), ((Result) object).getPoints().get(0).getGeoPoint());
+		public void onCompleted(Object caller, Object object) {
+			Edit edit = new UpdateNNSEdit(session, ((AlgorithmRequestNN) caller).getNode(), ((Result) object).getPoints().get(0).getGeoPoint());
 			edit.perform();
 			requestList.remove(caller);
 		}
 
 		@Override
-		public void onError(AsyncHandler caller, Object object) {
+		public void onError(Object caller, Object object) {
 			Toast.makeText(getApplicationContext(), object.toString(),
 					Toast.LENGTH_LONG).show();
 			requestList.remove(caller);
@@ -135,12 +134,12 @@ public class MapScreen extends MapActivity implements Session.Listener {
 
 	private final Observer geoCodingListener = new Observer() {
 		@Override
-		public void onCompleted(AsyncHandler caller, Object object) {
+		public void onCompleted(Object caller, Object object) {
 			mapView.setCenter(((GeoCodingHandler.GeoCodingResult) object).location);
 		}
 
 		@Override
-		public void onError(AsyncHandler caller, Object object) {
+		public void onError(Object caller, Object object) {
 			Toast.makeText(getApplicationContext(), object.toString(), Toast.LENGTH_LONG).show();
 		}
 	};
@@ -557,12 +556,12 @@ public class MapScreen extends MapActivity implements Session.Listener {
 	}
 
 	public void performNNSearch(Node node) {
-		requestList.add((RequestNN) new RequestNN(nnsListener, session, node).execute());
+		requestList.add(session.getSelectedAlgorithm().executeNN(nnsListener, session, node));
 	}
 
 	@SuppressWarnings("deprecation")
 	private void initializeHandler() {
-		Session.sesshandler = (RequestHandler) getLastNonConfigurationInstance();
+		Session.sesshandler = (AlgorithmRequest) getLastNonConfigurationInstance();
 
 		if (Session.sesshandler != null) {
 			Session.sesshandler.setListener(requestListener);
@@ -615,7 +614,7 @@ public class MapScreen extends MapActivity implements Session.Listener {
 		if (Session.sesshandler != null)
 			Session.sesshandler.setListener(null);
 
-		for (RequestNN request : requestList) {
+		for (AlgorithmRequestNN request : requestList) {
 			request.setListener(null);
 		}
 		super.onDestroy();

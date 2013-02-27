@@ -18,7 +18,6 @@ package de.uni.stuttgart.informatik.ToureNPlaner.Net.Handler;
 
 import de.uni.stuttgart.informatik.ToureNPlaner.Data.TBTResult;
 import de.uni.stuttgart.informatik.ToureNPlaner.Net.JacksonManager;
-import de.uni.stuttgart.informatik.ToureNPlaner.Net.Observer;
 import de.uni.stuttgart.informatik.ToureNPlaner.ToureNPlanerApplication;
 import de.uni.stuttgart.informatik.ToureNPlaner.UI.TBTNavigation;
 

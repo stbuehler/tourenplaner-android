@@ -20,9 +20,9 @@ import android.util.Log;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.uni.stuttgart.informatik.ToureNPlaner.Data.Error;
+import de.uni.stuttgart.informatik.ToureNPlaner.Handler.Observer;
 import de.uni.stuttgart.informatik.ToureNPlaner.Net.DoneHandlerInputStream;
 import de.uni.stuttgart.informatik.ToureNPlaner.Net.JacksonManager;
-import de.uni.stuttgart.informatik.ToureNPlaner.Net.Observer;
 
 import java.io.IOException;
 import java.io.InputStream;

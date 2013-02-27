@@ -27,9 +27,9 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
-import de.uni.stuttgart.informatik.ToureNPlaner.Net.Handler.AsyncHandler;
+
+import de.uni.stuttgart.informatik.ToureNPlaner.Handler.Observer;
 import de.uni.stuttgart.informatik.ToureNPlaner.Net.Handler.AuthRequestHandler;
-import de.uni.stuttgart.informatik.ToureNPlaner.Net.Observer;
 import de.uni.stuttgart.informatik.ToureNPlaner.Net.Session;
 import de.uni.stuttgart.informatik.ToureNPlaner.R;
 import de.uni.stuttgart.informatik.ToureNPlaner.UI.Dialogs.MyProgressDialog;
@@ -151,7 +151,7 @@ public class LoginScreen extends SherlockFragmentActivity implements Observer {
 	}
 
 	@Override
-	public void onCompleted(AsyncHandler caller, Object object) {
+	public void onCompleted(Object caller, Object object) {
 		handler = null;
 		MyProgressDialog dialog = (MyProgressDialog) getSupportFragmentManager().findFragmentByTag("login");
 		try {
@@ -165,7 +165,7 @@ public class LoginScreen extends SherlockFragmentActivity implements Observer {
 	}
 
 	@Override
-	public void onError(AsyncHandler caller, Object object) {
+	public void onError(Object caller, Object object) {
 		handler = null;
 		MyProgressDialog dialog = (MyProgressDialog) getSupportFragmentManager().findFragmentByTag("login");
 		try {

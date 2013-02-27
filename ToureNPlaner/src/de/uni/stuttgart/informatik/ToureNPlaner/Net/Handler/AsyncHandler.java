@@ -18,7 +18,7 @@ package de.uni.stuttgart.informatik.ToureNPlaner.Net.Handler;
 
 import android.os.AsyncTask;
 import android.util.Log;
-import de.uni.stuttgart.informatik.ToureNPlaner.Net.Observer;
+import de.uni.stuttgart.informatik.ToureNPlaner.Handler.Observer;
 
 import java.lang.ref.WeakReference;
 
@@ -52,7 +52,7 @@ public abstract class AsyncHandler extends AsyncTask<Void, Void, Object> {
 
 		// The listener has been collected
 		if (l == null) {
-			Log.d("tp","The listener has been collected");
+			Log.d("TP","The listener has been collected");
 			return;
 		}
 

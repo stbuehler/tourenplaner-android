@@ -19,8 +19,9 @@ package de.uni.stuttgart.informatik.ToureNPlaner.Net.Handler;
 import android.graphics.RectF;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import de.uni.stuttgart.informatik.ToureNPlaner.Handler.Observer;
 import de.uni.stuttgart.informatik.ToureNPlaner.Net.JacksonManager;
-import de.uni.stuttgart.informatik.ToureNPlaner.Net.Observer;
 import de.uni.stuttgart.informatik.ToureNPlaner.ToureNPlanerApplication;
 import org.mapsforge.core.GeoPoint;
 

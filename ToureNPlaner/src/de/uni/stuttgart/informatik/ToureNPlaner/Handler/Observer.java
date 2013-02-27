@@ -14,20 +14,10 @@
  *    limitations under the License.
  */
 
-package de.uni.stuttgart.informatik.ToureNPlaner.Net.Handler;
+package de.uni.stuttgart.informatik.ToureNPlaner.Handler;
 
-import de.uni.stuttgart.informatik.ToureNPlaner.Handler.Observer;
-import de.uni.stuttgart.informatik.ToureNPlaner.Net.Session;
+public interface Observer {
+	void onCompleted(Object caller, Object object);
 
-/**
- * @author  Niklas Schnelle
- */
-public abstract class SessionAwareHandler extends AsyncHandler {
-	protected Session session;
-
-
-	public SessionAwareHandler(Observer listener, Session session) {
-		super(listener);
-		this.session = session;
-	}
+	void onError(Object caller, Object object);
 }

@@ -26,10 +26,9 @@ import de.uni.stuttgart.informatik.ToureNPlaner.Data.Edits.Edit;
 import de.uni.stuttgart.informatik.ToureNPlaner.Data.Edits.TBTResultEdit;
 import de.uni.stuttgart.informatik.ToureNPlaner.Data.Node;
 import de.uni.stuttgart.informatik.ToureNPlaner.Data.TBTResult;
-import de.uni.stuttgart.informatik.ToureNPlaner.Net.Handler.AsyncHandler;
+import de.uni.stuttgart.informatik.ToureNPlaner.Handler.Observer;
 import de.uni.stuttgart.informatik.ToureNPlaner.Net.Handler.SimpleNetworkHandler;
 import de.uni.stuttgart.informatik.ToureNPlaner.Net.Handler.TurnByTurnHandler;
-import de.uni.stuttgart.informatik.ToureNPlaner.Net.Observer;
 import de.uni.stuttgart.informatik.ToureNPlaner.Net.Session;
 import de.uni.stuttgart.informatik.ToureNPlaner.ToureNPlanerApplication;
 import de.uni.stuttgart.informatik.ToureNPlaner.UI.Activities.MapScreen.MapScreen;
@@ -55,7 +54,7 @@ public class TBTNavigation implements TextToSpeech.OnInitListener, Serializable,
 	}
 
 	@Override
-	public void onCompleted(AsyncHandler caller, Object object) {
+	public void onCompleted(Object caller, Object object) {
 		Log.d("tp", "tbt request completed: " +object.toString());
 		Session.sesshandler = null;
 		Session.simplehandler = null;
@@ -69,7 +68,7 @@ public class TBTNavigation implements TextToSpeech.OnInitListener, Serializable,
 	}
 
 	@Override
-	public void onError(AsyncHandler caller, Object object) {
+	public void onError(Object caller, Object object) {
 		Log.d("tp", "error: " + object.toString());
 		Session.simplehandler = null;
 		//setSupportProgressBarIndeterminateVisibility(false);

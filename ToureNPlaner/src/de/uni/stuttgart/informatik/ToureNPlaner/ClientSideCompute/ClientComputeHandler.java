@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package de.uni.stuttgart.informatik.ToureNPlaner.Net.Handler;
+package de.uni.stuttgart.informatik.ToureNPlaner.ClientSideCompute;
 
 import android.util.Log;
 import com.carrotsearch.hppc.IntArrayDeque;
@@ -23,17 +23,16 @@ import com.carrotsearch.hppc.cursors.IntCursor;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.uni.stuttgart.informatik.ToureNPlaner.ClientSideCompute.ClientGraph;
-import de.uni.stuttgart.informatik.ToureNPlaner.ClientSideCompute.ShortestPath;
-import de.uni.stuttgart.informatik.ToureNPlaner.ClientSideCompute.SimpleGraph;
 import de.uni.stuttgart.informatik.ToureNPlaner.Data.Constraints.Constraint;
 import de.uni.stuttgart.informatik.ToureNPlaner.Data.Constraints.IntegerConstraint;
 import de.uni.stuttgart.informatik.ToureNPlaner.Data.Node;
 import de.uni.stuttgart.informatik.ToureNPlaner.Data.Request;
 import de.uni.stuttgart.informatik.ToureNPlaner.Data.Result;
+import de.uni.stuttgart.informatik.ToureNPlaner.Handler.AlgorithmRequest;
+import de.uni.stuttgart.informatik.ToureNPlaner.Handler.Observer;
 import de.uni.stuttgart.informatik.ToureNPlaner.Net.JacksonManager;
-import de.uni.stuttgart.informatik.ToureNPlaner.Net.Observer;
 import de.uni.stuttgart.informatik.ToureNPlaner.Net.Session;
+import de.uni.stuttgart.informatik.ToureNPlaner.Net.Handler.SessionAwareHandler;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,7 +42,7 @@ import java.util.ArrayList;
 /**
  * @author Niklas Schnelle
  */
-public class ClientComputeHandler extends SessionAwareHandler {
+public class ClientComputeHandler extends SessionAwareHandler implements AlgorithmRequest {
 	private static final String TAG = "ToureNPlaner";
 
 	private int version;

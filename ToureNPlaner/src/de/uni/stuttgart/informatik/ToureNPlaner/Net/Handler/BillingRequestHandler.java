@@ -17,8 +17,8 @@
 package de.uni.stuttgart.informatik.ToureNPlaner.Net.Handler;
 
 import de.uni.stuttgart.informatik.ToureNPlaner.Data.Result;
+import de.uni.stuttgart.informatik.ToureNPlaner.Handler.Observer;
 import de.uni.stuttgart.informatik.ToureNPlaner.Net.JacksonManager.ContentType;
-import de.uni.stuttgart.informatik.ToureNPlaner.Net.Observer;
 import de.uni.stuttgart.informatik.ToureNPlaner.Net.Session;
 
 import java.io.InputStream;

@@ -23,15 +23,16 @@ import de.uni.stuttgart.informatik.ToureNPlaner.Data.Constraints.Constraint;
 import de.uni.stuttgart.informatik.ToureNPlaner.Data.Node;
 import de.uni.stuttgart.informatik.ToureNPlaner.Data.Request;
 import de.uni.stuttgart.informatik.ToureNPlaner.Data.Result;
+import de.uni.stuttgart.informatik.ToureNPlaner.Handler.AlgorithmRequest;
+import de.uni.stuttgart.informatik.ToureNPlaner.Handler.Observer;
 import de.uni.stuttgart.informatik.ToureNPlaner.Net.JacksonManager;
-import de.uni.stuttgart.informatik.ToureNPlaner.Net.Observer;
 import de.uni.stuttgart.informatik.ToureNPlaner.Net.Session;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
-public class RequestHandler extends SessionNetworkHandler {
+public class RequestHandler extends SessionNetworkHandler implements AlgorithmRequest {
 	private int version;
 
 	public RequestHandler(Observer listener, Session session) {

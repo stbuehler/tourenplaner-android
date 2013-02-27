@@ -21,10 +21,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
-import de.uni.stuttgart.informatik.ToureNPlaner.Data.ServerInfo;
-import de.uni.stuttgart.informatik.ToureNPlaner.Net.Handler.AsyncHandler;
+
+import de.uni.stuttgart.informatik.ToureNPlaner.Handler.Observer;
 import de.uni.stuttgart.informatik.ToureNPlaner.Net.Handler.ServerInfoHandler;
-import de.uni.stuttgart.informatik.ToureNPlaner.Net.Observer;
 import de.uni.stuttgart.informatik.ToureNPlaner.Net.Session;
 import de.uni.stuttgart.informatik.ToureNPlaner.R;
 import de.uni.stuttgart.informatik.ToureNPlaner.UI.Dialogs.MyProgressDialog;
@@ -54,13 +53,13 @@ public class MainScreen extends SherlockFragmentActivity implements Observer {
 	}
 
 	@Override
-	public void onCompleted(AsyncHandler caller, Object object) {
+	public void onCompleted(Object caller, Object object) {
 		Session session = (Session) object;
 		Intent myIntent;
-		if (session.getServerInfo().getServerType() == ServerInfo.ServerType.PUBLIC) {
-			myIntent = new Intent(getBaseContext(), AlgorithmScreen.class);
-		} else {
+		if (session.isPrivateURL()) {
 			myIntent = new Intent(getBaseContext(), LoginScreen.class);
+		} else {
+			myIntent = new Intent(getBaseContext(), AlgorithmScreen.class);
 		}
 
 		myIntent.putExtra(Session.IDENTIFIER, session);
@@ -68,7 +67,7 @@ public class MainScreen extends SherlockFragmentActivity implements Observer {
 	}
 
 	@Override
-	public void onError(AsyncHandler caller, Object object) {
+	public void onError(Object caller, Object object) {
 		Toast.makeText(getApplicationContext(), object.toString(), Toast.LENGTH_LONG).show();
 		finish();
 	}

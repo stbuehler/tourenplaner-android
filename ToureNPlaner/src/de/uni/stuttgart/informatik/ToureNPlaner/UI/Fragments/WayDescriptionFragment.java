@@ -26,8 +26,8 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import com.actionbarsherlock.app.SherlockFragment;
-import de.uni.stuttgart.informatik.ToureNPlaner.Net.Handler.AsyncHandler;
-import de.uni.stuttgart.informatik.ToureNPlaner.Net.Observer;
+
+import de.uni.stuttgart.informatik.ToureNPlaner.Handler.Observer;
 import de.uni.stuttgart.informatik.ToureNPlaner.Net.Session;
 import de.uni.stuttgart.informatik.ToureNPlaner.R;
 import de.uni.stuttgart.informatik.ToureNPlaner.ToureNPlanerApplication;
@@ -68,7 +68,7 @@ public class WayDescriptionFragment extends SherlockFragment implements Observer
 	}
 
 	@Override
-	public void onCompleted(AsyncHandler caller, Object object) {
+	public void onCompleted(Object caller, Object object) {
 
 		if (session.gettbtResult() != null && session.gettbtResult().getStreetNames() != null) {
 			List<String> streets = session.gettbtResult().getStreetNames();
@@ -79,7 +79,7 @@ public class WayDescriptionFragment extends SherlockFragment implements Observer
 	}
 
 	@Override
-	public void onError(AsyncHandler caller, Object object) {
+	public void onError(Object caller, Object object) {
 		Log.d("tp", "error on request: Caller=" + caller.getClass().getName() + " error=" + object.toString());
 	}
 }

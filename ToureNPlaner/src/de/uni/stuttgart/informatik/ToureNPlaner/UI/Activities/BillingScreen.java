@@ -26,10 +26,9 @@ import android.widget.AbsListView.OnScrollListener;
 import android.widget.Toast;
 import com.actionbarsherlock.app.SherlockExpandableListActivity;
 import de.uni.stuttgart.informatik.ToureNPlaner.Data.*;
-import de.uni.stuttgart.informatik.ToureNPlaner.Net.Handler.AsyncHandler;
+import de.uni.stuttgart.informatik.ToureNPlaner.Handler.Observer;
 import de.uni.stuttgart.informatik.ToureNPlaner.Net.Handler.BillingListHandler;
 import de.uni.stuttgart.informatik.ToureNPlaner.Net.Handler.BillingRequestHandler;
-import de.uni.stuttgart.informatik.ToureNPlaner.Net.Observer;
 import de.uni.stuttgart.informatik.ToureNPlaner.Net.Session;
 import de.uni.stuttgart.informatik.ToureNPlaner.R;
 import de.uni.stuttgart.informatik.ToureNPlaner.UI.Activities.MapScreen.MapScreen;
@@ -91,7 +90,7 @@ public class BillingScreen extends SherlockExpandableListActivity implements Obs
 	// ----------- BillingRequestHandler ----------------------
 	private final Observer billingRequestListener = new Observer() {
 		@Override
-		public void onCompleted(AsyncHandler caller, Object object) {
+		public void onCompleted(Object caller, Object object) {
 			setSupportProgressBarIndeterminateVisibility(false);
 
 			Result result = (Result) object;
@@ -102,7 +101,7 @@ public class BillingScreen extends SherlockExpandableListActivity implements Obs
 
 			// search for the algorithmn suffix that was used by this request
 			int PositionOfAlg = 0;
-			algorithmList = session.getServerInfo().getAlgorithms();
+			algorithmList = session.getAlgorithms();
 			for (int i = 0; i < algorithmList.size(); i++) {
 				if (algorithmList.get(i).getUrlsuffix().equals(algSuffix)) {
 					PositionOfAlg = i;
@@ -128,7 +127,7 @@ public class BillingScreen extends SherlockExpandableListActivity implements Obs
 		}
 
 		@Override
-		public void onError(AsyncHandler caller, Object object) {
+		public void onError(Object caller, Object object) {
 			billingRequestHandler = null;
 			setSupportProgressBarIndeterminateVisibility(false);
 			Toast.makeText(getApplicationContext(), ((Exception) object).getLocalizedMessage(), Toast.LENGTH_LONG).show();
@@ -138,7 +137,7 @@ public class BillingScreen extends SherlockExpandableListActivity implements Obs
 	//------ BillingListHandler ------
 	@SuppressWarnings("unchecked")
 	@Override
-	public void onCompleted(AsyncHandler caller, Object object) {
+	public void onCompleted(Object caller, Object object) {
 		setSupportProgressBarIndeterminateVisibility(false);
 		adapter.addAll((ArrayList<BillingItem>) object);
 		adapter.notifyDataSetChanged();
@@ -146,7 +145,7 @@ public class BillingScreen extends SherlockExpandableListActivity implements Obs
 	}
 
 	@Override
-	public void onError(AsyncHandler caller, Object object) {
+	public void onError(Object caller, Object object) {
 		billingListhandler = null;
 		setSupportProgressBarIndeterminateVisibility(false);
 		Toast.makeText(this, ((Exception) object).getLocalizedMessage(), Toast.LENGTH_LONG).show();

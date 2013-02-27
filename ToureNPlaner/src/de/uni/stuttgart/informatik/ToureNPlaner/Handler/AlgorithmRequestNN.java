@@ -14,20 +14,33 @@
  *    limitations under the License.
  */
 
-package de.uni.stuttgart.informatik.ToureNPlaner.Net.Handler;
+package de.uni.stuttgart.informatik.ToureNPlaner.Handler;
 
-import de.uni.stuttgart.informatik.ToureNPlaner.Handler.Observer;
+import de.uni.stuttgart.informatik.ToureNPlaner.Data.AlgorithmInfo;
+import de.uni.stuttgart.informatik.ToureNPlaner.Data.Node;
 import de.uni.stuttgart.informatik.ToureNPlaner.Net.Session;
 
 /**
- * @author  Niklas Schnelle
+ * Interface to keep track of a running
+ * {@link AlgorithmInfo#executeNN(Observer, Session, Node) request}.
+ *
+ * @author Stefan Bühler
  */
-public abstract class SessionAwareHandler extends AsyncHandler {
-	protected Session session;
+public interface AlgorithmRequestNN {
+	/**
+	 * @return node the request is searching for
+	 */
+	public Node getNode();
 
+	/**
+	 * Cancel request.
+	 */
+	public boolean cancel(boolean mayInterruptIfRunning);
 
-	public SessionAwareHandler(Observer listener, Session session) {
-		super(listener);
-		this.session = session;
-	}
+	/**
+	 * Set Observer to report result to.
+	 *
+	 * @param listener
+	 */
+	public void setListener(Observer listener);
 }

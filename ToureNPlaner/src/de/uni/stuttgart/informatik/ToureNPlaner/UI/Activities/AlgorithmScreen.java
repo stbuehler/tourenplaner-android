@@ -27,7 +27,6 @@ import com.actionbarsherlock.app.SherlockListActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import de.uni.stuttgart.informatik.ToureNPlaner.Data.AlgorithmInfo;
-import de.uni.stuttgart.informatik.ToureNPlaner.Data.ServerInfo;
 import de.uni.stuttgart.informatik.ToureNPlaner.Net.Session;
 import de.uni.stuttgart.informatik.ToureNPlaner.R;
 import de.uni.stuttgart.informatik.ToureNPlaner.UI.Activities.MapScreen.MapScreen;
@@ -63,12 +62,17 @@ public class AlgorithmScreen extends SherlockListActivity {
 
 	private void setupListView() {
 		final ArrayList<AlgorithmInfo> algorithms = new ArrayList<AlgorithmInfo>();
-		for (AlgorithmInfo alg : session.getServerInfo().getAlgorithms()) {
+		for (AlgorithmInfo alg : session.getAlgorithms()) {
 			if (!alg.isHidden())
 				algorithms.add(alg);
 		}
 
-		Collections.sort(algorithms);
+		Collections.sort(algorithms, new java.util.Comparator<AlgorithmInfo>() {
+			@Override
+			public int compare(AlgorithmInfo a, AlgorithmInfo b) {
+				return a.getName().compareTo(b.getName());
+			}
+		});
 
 		ArrayAdapter<AlgorithmInfo> adapter = new ArrayAdapter<AlgorithmInfo>(this, R.layout.list_item2, algorithms) {
 			@Override
@@ -112,7 +116,7 @@ public class AlgorithmScreen extends SherlockListActivity {
 
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-		if (session.getServerInfo().getServerType() == ServerInfo.ServerType.PUBLIC) {
+		if (!session.isPrivateURL()) {
 			menu.findItem(R.id.billing).setVisible(false);
 		}
 		return super.onPrepareOptionsMenu(menu);
