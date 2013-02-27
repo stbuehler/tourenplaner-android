@@ -10,10 +10,11 @@
                 android:key="offline_map_location"
                 android:title="@string/offline_map_location"
                 android:dialogTitle="@string/input_offline_map_location"/>
-        <EditTextPreference
+        <EditTextPreference android:dialogTitle="@string/input_offline_ch_location" android:key="offline_ch_location" android:title="@string/offline_ch_location"/><EditTextPreference
                 android:key="tile_server"
                 android:title="@string/tile_server"
                 android:dialogTitle="@string/input_tile_server"/>
+        
     </PreferenceCategory>
 
     <PreferenceCategory

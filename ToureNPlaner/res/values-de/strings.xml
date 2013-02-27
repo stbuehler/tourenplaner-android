@@ -81,4 +81,6 @@
   <string name="needtargetmarker">Benötige mindestens ein Ziel, um Turn By Turn Directions abzurufen</string>
     <string name="routeinprogress">Route wird gerade aktualisiert, bitte mit neuer Route nochmal versuchen</string>
   <string name="togglecompass">Kompass ein/aus</string>
+  <string name="offline_ch_location">Offline-Path-CH Datei</string>
+  <string name="input_offline_ch_location">Offline-Path-CH Datei auswählen</string>
 </resources>

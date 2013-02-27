@@ -63,10 +63,12 @@ public class MapScreenPreferences extends SherlockPreferenceActivity implements 
 	private ListPreference instant;
 	private EditTextPreference tileServer;
 	private EditTextPreference offlineMapLoc;
+	private EditTextPreference offlineChLoc;
 	private EditTextPreference tbtip;
 
 	public static final String defaultTileServer = "http://gerbera.informatik.uni-stuttgart.de/osm/tiles/%1$d/%2$d/%3$d.png";
 	public static final String defaultMapLocation = Environment.getExternalStorageDirectory().toString();
+	public static final String defaultChLocation = Environment.getExternalStorageDirectory().toString();
 	public static final String defaulttbtip = "192.168.1.105:8080";
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -88,6 +90,28 @@ public class MapScreenPreferences extends SherlockPreferenceActivity implements 
 								intent.putExtra("org.openintents.extra.TITLE", "Please select a file");
 								try {
 									startActivityForResult(intent, 1);
+								} catch (ActivityNotFoundException e) {
+									Toast.makeText(getApplicationContext(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+								}
+							}
+						});
+				// Doesn't Work
+				return Intents.isIntentAvailable(MapScreenPreferences.this, "org.openintents.action.PICK_FILE");
+			}
+		});
+		offlineChLoc = (EditTextPreference) getPreferenceScreen().findPreference("offline_ch_location");
+		offlineChLoc.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				getWindow().getDecorView().getRootView().post(
+						new Runnable() {
+							@Override
+							public void run() {
+								Intent intent = new Intent("org.openintents.action.PICK_FILE");
+								intent.setData(Uri.parse("file://" + offlineChLoc));
+								intent.putExtra("org.openintents.extra.TITLE", "Please select a file");
+								try {
+									startActivityForResult(intent, 2);
 								} catch (ActivityNotFoundException e) {
 									Toast.makeText(getApplicationContext(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
 								}
@@ -148,14 +172,20 @@ public class MapScreenPreferences extends SherlockPreferenceActivity implements 
 		mapGenerator.setSummary(mapGenerator.getEntry());
 		tileServer.setSummary(sp.getString("tile_server", defaultTileServer));
 		offlineMapLoc.setSummary(sp.getString("offline_map_location", defaultMapLocation));
+		offlineChLoc.setSummary(sp.getString("offline_ch_location", defaultChLocation));
 		tbtip.setSummary(sp.getString("tbtip", defaulttbtip));
 	}
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (resultCode == RESULT_OK) {
-			offlineMapLoc.setText(data.getData().getPath());
-			offlineMapLoc.getEditText().setText(offlineMapLoc.getText());
+			if (requestCode == 1) {
+				offlineMapLoc.setText(data.getData().getPath());
+				offlineMapLoc.getEditText().setText(offlineMapLoc.getText());
+			} else {
+				offlineChLoc.setText(data.getData().getPath());
+				offlineChLoc.getEditText().setText(offlineChLoc.getText());
+			}
 		}
 	}
 

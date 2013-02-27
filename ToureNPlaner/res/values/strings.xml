@@ -56,6 +56,8 @@
     <string name="tile_server">Tile server</string>
     <string name="offline_map_location">Offline map location</string>
     <string name="input_offline_map_location">Enter offline map location</string>
+    <string name="offline_ch_location">Offline Path CH Location</string>
+    <string name="input_offline_ch_location">Enter offline path CH location</string>
     <string name="is_instant_request">Instant Request</string>
     <string name="map_generator">Map</string>
     <string name="input_map_generator">Choose a Map</string>
