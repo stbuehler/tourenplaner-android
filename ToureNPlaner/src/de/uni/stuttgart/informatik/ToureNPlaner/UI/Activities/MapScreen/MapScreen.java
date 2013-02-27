@@ -47,7 +47,7 @@ import de.uni.stuttgart.informatik.ToureNPlaner.Net.Session;
 import de.uni.stuttgart.informatik.ToureNPlaner.R;
 import de.uni.stuttgart.informatik.ToureNPlaner.UI.Activities.*;
 import de.uni.stuttgart.informatik.ToureNPlaner.UI.CustomTileDownloader;
-import de.uni.stuttgart.informatik.ToureNPlaner.UI.Overlays.FastWayOverlay;
+import de.uni.stuttgart.informatik.ToureNPlaner.UI.Overlays.FastWayAndNodeOverlay;
 import de.uni.stuttgart.informatik.ToureNPlaner.UI.Overlays.NodeOverlay;
 import de.uni.stuttgart.informatik.ToureNPlaner.UI.TBTNavigation;
 import org.mapsforge.android.maps.MapView;
@@ -76,21 +76,20 @@ public class MapScreen extends MapActivity implements Session.Listener {
 
 	MapView mapView;
 
-	public FastWayOverlay getFastWayOverlay() {
+	public FastWayAndNodeOverlay getFastWayOverlay() {
 		return fastWayOverlay;
 	}
 
-	private FastWayOverlay fastWayOverlay;
+	private FastWayAndNodeOverlay fastWayOverlay;
 	private Session session;
 	public static final int REQUEST_NODEMODEL = 0;
 	public static final int REQUEST_NODE = 1;
 	public static final int REQUEST_CONSTRAINTS = 2;
 
 	public NodeOverlay getNodeOverlay() {
-		return nodeOverlay;
+		return fastWayOverlay;
 	}
 
-	NodeOverlay nodeOverlay;
 	private LocationManager locManager;
 	private MapScreenPreferences.Instant instantRequest;
 	private Toast messageToast;
@@ -171,9 +170,7 @@ public class MapScreen extends MapActivity implements Session.Listener {
 		getSupportActionBar().setSubtitle(session.getSelectedAlgorithm().toString());
 		initializeHandler();
 
-		setupWayOverlay();
-
-		setupGPS(savedInstanceState, isFirstStart);
+		setupGPSAndWayOverlay(savedInstanceState, isFirstStart);
 
 		if (session.getResult() != null) {
 			updateDistancePopup();
@@ -185,9 +182,7 @@ public class MapScreen extends MapActivity implements Session.Listener {
 			mapView.setCenter(new GeoPoint(51.33, 10.45));
 		}
 
-		mapView.getOverlays().add(nodeOverlay);
-
-		session.registerListener(NodeOverlay.class, nodeOverlay);
+		session.registerListener(NodeOverlay.class, getNodeOverlay());
 		session.registerListener(MapScreen.class, this);
 	}
 
@@ -250,7 +245,8 @@ public class MapScreen extends MapActivity implements Session.Listener {
 		offlineMapLocation = newOfflineMapLocation;
 	}
 
-	private void setupGPS(Bundle savedInstanceState, boolean isFirstStart) {
+	private void setupGPSAndWayOverlay(Bundle savedInstanceState, boolean isFirstStart) {
+		/* GPS */
 		Location loc = locManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
 		GeoPoint gpsGeoPoint = null;
@@ -265,10 +261,8 @@ public class MapScreen extends MapActivity implements Session.Listener {
 		}
 
 		gpsListener = new GpsListener(this, savedInstanceState, gpsGeoPoint, session);
-		nodeOverlay = new NodeOverlay(this, session, gpsGeoPoint);
-	}
 
-	private void setupWayOverlay() {
+		/* Path */
 		Path p = new Path();
 		p.moveTo(4.f, 0.f);
 		p.lineTo(0.f, -4.f);
@@ -288,7 +282,7 @@ public class MapScreen extends MapActivity implements Session.Listener {
 				new CornerPathEffect(30.f)));
 
 		// create the WayOverlay and add the ways
-		this.fastWayOverlay = new FastWayOverlay(session, fastWayOverlayColor);
+		this.fastWayOverlay = new FastWayAndNodeOverlay(this, session, gpsGeoPoint, fastWayOverlayColor);
 		mapView.getOverlays().add(this.fastWayOverlay);
 		Result result = session.getResult();
 		if (result != null) {
@@ -338,16 +332,16 @@ public class MapScreen extends MapActivity implements Session.Listener {
 			public boolean onMenuItemClick(MenuItem item) {
 				if (item.isChecked()) {
 					gpsListener.sensorMgr.unregisterListener(gpsListener);
-					nodeOverlay.setGPSDirectional(false);
+					getNodeOverlay().setGPSDirectional(false);
 					session.setDirection(0);
-					nodeOverlay.updateGPSDrawableDirection();
-					nodeOverlay.requestRedraw();
+					getNodeOverlay().updateGPSDrawableDirection();
+					getNodeOverlay().requestRedraw();
 				} else {
 					gpsListener.sensorMgr.registerListener(gpsListener,
 							gpsListener.getSensorGrav(), GpsListener.sensordelay);
 					gpsListener.sensorMgr.registerListener(gpsListener,
 							gpsListener.getSensorMag(), GpsListener.sensordelay);
-					nodeOverlay.setGPSDirectional(true);
+					getNodeOverlay().setGPSDirectional(true);
 				}
 				item.setChecked(!item.isChecked());
 				return true;
@@ -451,9 +445,9 @@ public class MapScreen extends MapActivity implements Session.Listener {
 				this.supportInvalidateOptionsMenu();
 				// intentionally run the case R.id.gps also
 			case R.id.gps:
-				GeoPoint pos = nodeOverlay.getGpsPosition();
+				GeoPoint pos = getNodeOverlay().getGpsPosition();
 				if (pos != null)
-					mapView.setCenter(nodeOverlay.getGpsPosition());
+					mapView.setCenter(getNodeOverlay().getGpsPosition());
 				return true;
 			case R.id.algorithm_constraints:
 				myIntent = new Intent(this, AlgorithmConstraintsScreen.class);
@@ -604,9 +598,9 @@ public class MapScreen extends MapActivity implements Session.Listener {
 
 	@Override
 	protected void onDestroy() {
-		nodeOverlay.setMapScreen(null);
+		getNodeOverlay().setMapScreen(null);
 
-		mapView.getOverlays().remove(nodeOverlay);
+		mapView.getOverlays().remove(fastWayOverlay);
 
 		session.removeListener(NodeOverlay.class);
 		session.removeListener(MapScreen.class);

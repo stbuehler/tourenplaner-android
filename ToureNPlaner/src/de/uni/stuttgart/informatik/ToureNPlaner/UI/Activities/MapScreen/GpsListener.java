@@ -76,7 +76,7 @@ class GpsListener implements android.location.LocationListener, SensorEventListe
 		if (ms != null) {
 			//TODO: Do we want to use bearing data from gps or is the compass enough for us?
 			//ms.nodeOverlay.updateGpsMarker(geoPoint, location.hasBearing() ? location.getBearing() : -1);
-			ms.nodeOverlay.updateGpsMarker(geoPoint);
+			ms.getNodeOverlay().updateGpsMarker(geoPoint);
 			if (following) {
 				ms.mapView.setCenter(geoPoint);
 			}
@@ -106,7 +106,7 @@ class GpsListener implements android.location.LocationListener, SensorEventListe
 		lastKnownLocation = null;
 		MapScreen ms = mapScreen.get();
 		if (ms != null) {
-			ms.nodeOverlay.updateGpsMarker(null);
+			ms.getNodeOverlay().updateGpsMarker(null);
 			ms.invalidateOptionsMenu();
 		}
 	}
@@ -198,9 +198,9 @@ class GpsListener implements android.location.LocationListener, SensorEventListe
 		if (floatBearing < 0) floatBearing += 360;
 
 		Log.v("tp", "direction " + floatBearing);
-		if (mapScreen != null && mapScreen.get() != null && mapScreen.get().nodeOverlay != null) {
+		if (mapScreen != null && mapScreen.get() != null && mapScreen.get().getNodeOverlay() != null) {
 			session.setDirection(floatBearing);
-			mapScreen.get().nodeOverlay.updateGPSDrawableDirection();
+			mapScreen.get().getNodeOverlay().updateGPSDrawableDirection();
 		}
 	}
 

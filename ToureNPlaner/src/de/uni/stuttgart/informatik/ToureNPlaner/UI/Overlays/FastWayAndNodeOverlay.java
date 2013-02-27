@@ -25,17 +25,15 @@ import de.uni.stuttgart.informatik.ToureNPlaner.Data.Edits.AddNodeEdit;
 import de.uni.stuttgart.informatik.ToureNPlaner.Data.Edits.Edit;
 import de.uni.stuttgart.informatik.ToureNPlaner.Data.Node;
 import de.uni.stuttgart.informatik.ToureNPlaner.Net.Session;
+import de.uni.stuttgart.informatik.ToureNPlaner.UI.Activities.MapScreen.MapScreen;
 import de.uni.stuttgart.informatik.ToureNPlaner.ToureNPlanerApplication;
 import org.mapsforge.android.maps.MapView;
 import org.mapsforge.android.maps.Projection;
-import org.mapsforge.android.maps.overlay.Overlay;
 import org.mapsforge.core.GeoPoint;
 
 import java.util.ArrayList;
 
-public class FastWayOverlay extends Overlay {
-	private final Session session;
-
+public class FastWayAndNodeOverlay extends NodeOverlay {
 	public synchronized void initWay(int[][] points) {
 		for (int[] p : points) {
 			ways.add(new Way(p));
@@ -49,8 +47,8 @@ public class FastWayOverlay extends Overlay {
 
 	private final ArrayList<Way> ways = new ArrayList<Way>();
 
-	public FastWayOverlay(Session session, Paint paint) {
-		this.session = session;
+	public FastWayAndNodeOverlay(MapScreen mapScreen, Session session, GeoPoint gpsPoint, Paint paint) {
+		super(mapScreen, session, gpsPoint);
 		this.paint = paint;
 		this.path.setFillType(Path.FillType.EVEN_ODD);
 		// About 3.1 mm: 20/160 inch
@@ -66,11 +64,13 @@ public class FastWayOverlay extends Overlay {
 
 	@Override
 	protected String getThreadName() {
-		return "FastWayOverlay";
+		return "FastWayAndNodeOverlay";
 	}
 
 	@Override
 	public boolean onTap(GeoPoint geoPoint, MapView mapView) {
+		if (super.onTap(geoPoint, mapView)) return true;
+
 		if (session.getNodeModel().size() >= session.getSelectedAlgorithm().getMaxPoints()) {
 			return false;
 		}
@@ -113,16 +113,15 @@ public class FastWayOverlay extends Overlay {
 
 	@Override
 	protected synchronized void drawOverlayBitmap(Canvas canvas, Point drawPosition, Projection projection, byte drawZoomLevel) {
-		if (ways.isEmpty()) {
-			// stop working
-			return;
+		if (!ways.isEmpty()) {
+			GeoPoint topLeft = projection.fromPixels(0, 0);
+			GeoPoint bottomRight = projection.fromPixels(this.internalMapView.getWidth(), this.internalMapView.getHeight());
+			for (Way way : ways) {
+				way.setupPath(path, drawPosition, drawZoomLevel, topLeft.longitudeE6, topLeft.latitudeE6, bottomRight.longitudeE6, bottomRight.latitudeE6);
+				canvas.drawPath(path, paint);
+			}
 		}
 
-		GeoPoint topLeft = projection.fromPixels(0, 0);
-		GeoPoint bottomRight = projection.fromPixels(this.internalMapView.getWidth(), this.internalMapView.getHeight());
-		for (Way way : ways) {
-			way.setupPath(path, drawPosition, drawZoomLevel, topLeft.longitudeE6, topLeft.latitudeE6, bottomRight.longitudeE6, bottomRight.latitudeE6);
-			canvas.drawPath(path, paint);
-		}
+		super.drawOverlayBitmap(canvas, drawPosition, projection, drawZoomLevel);
 	}
 }

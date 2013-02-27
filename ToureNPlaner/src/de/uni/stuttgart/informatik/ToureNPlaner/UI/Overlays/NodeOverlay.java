@@ -35,11 +35,11 @@ import org.mapsforge.core.GeoPoint;
 
 import java.util.ArrayList;
 
-public class NodeOverlay extends ItemizedOverlay<OverlayItem> implements Session.Listener {
+public abstract class NodeOverlay extends ItemizedOverlay<OverlayItem> implements Session.Listener {
 	private ArrayList<OverlayItem> list = new ArrayList<OverlayItem>();
 
-	private MapScreen mapScreen;
-	private final Session session;
+	protected MapScreen mapScreen;
+	protected final Session session;
 
 	private static final int GPS_RADIUS = 10;
 	private OverlayItem gpsMarker;
