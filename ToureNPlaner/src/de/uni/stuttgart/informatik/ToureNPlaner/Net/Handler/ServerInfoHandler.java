@@ -16,6 +16,8 @@
 
 package de.uni.stuttgart.informatik.ToureNPlaner.Net.Handler;
 
+import android.widget.Toast;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -28,6 +30,7 @@ import de.uni.stuttgart.informatik.ToureNPlaner.Net.NetworkAlgorithmInfo;
 import de.uni.stuttgart.informatik.ToureNPlaner.Net.Session;
 import de.uni.stuttgart.informatik.ToureNPlaner.R;
 import de.uni.stuttgart.informatik.ToureNPlaner.ToureNPlanerApplication;
+import de.unistuttgart.informatik.OfflineToureNPlaner.Handler.OfflineAlgorithmInfo;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.InputStream;
@@ -148,7 +151,7 @@ public class ServerInfoHandler extends SimpleNetworkHandler {
 		JsonNode object = mapper.readValue(inputStream, JsonNode.class);
 
 		final JsonNode json_algorithms = object.get("algorithms");
-		final ArrayList<AlgorithmInfo> algorithms = new ArrayList<AlgorithmInfo>(1 + json_algorithms.size());
+		final ArrayList<AlgorithmInfo> algorithms = new ArrayList<AlgorithmInfo>(2 + json_algorithms.size());
 
 		for (JsonNode node : json_algorithms) {
 			algorithms.add(parseAlgorithmInfo(node));
@@ -160,5 +163,31 @@ public class ServerInfoHandler extends SimpleNetworkHandler {
 		session.setURL(parseServerInfo(url, object));
 		session.setAlgorithms(algorithms);
 		return session;
+	}
+
+	@Override
+	public void onPostExecute(Object object) {
+		if (object instanceof Session) {
+			Session session = (Session) object;
+			final ArrayList<AlgorithmInfo> algorithms = session.getAlgorithms();
+			algorithms.add(new OfflineAlgorithmInfo());
+		} else {
+			Toast.makeText(ToureNPlanerApplication.getContext(),"Error:\n" + object.toString(), Toast.LENGTH_LONG).show();
+
+			final ArrayList<AlgorithmInfo> algorithms = new ArrayList<AlgorithmInfo>(1);
+			algorithms.add(new OfflineAlgorithmInfo());
+
+			Session session = new Session();
+			URL fallbackurl = null;
+			try {
+				fallbackurl = new URL(url);
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			}
+			if (fallbackurl != null) session.setURL(fallbackurl);
+			session.setAlgorithms(algorithms);
+			object = session;
+		}
+		super.onPostExecute(object);
 	}
 }
